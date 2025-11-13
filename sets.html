@@ -1,134 +1,272 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مجموعه A</title>
-  <style>
-    body {
-      font-family: 'Tahoma', sans-serif;
-      background: #e3f2fd;
-      color: #222;
-      padding: 40px;
-      direction: rtl;
-    }
-    h2 { color: #0d47a1; }
-    select, input, button {
-      margin: 10px 0;
-      padding: 8px 12px;
-      font-size: 16px;
-    }
-    button {
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #1976d2;
-      color: white;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #0d47a1;
-    }
-    .big-btn {
-      display: block;
-      width: 90%;
-      margin-top: 20px;
-      padding: 12px;
-      font-size: 18px;
-      background: #1565c0;
-    }
-    .result-box {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      margin-top: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>آزمایشگاه مجموعه‌ها — مجموعه A</title>
+<style>
+  :root{--accent:#0b63b6;--accent2:#ff9800}
+  body{font-family:Tahoma, Arial, sans-serif;background:#eaf6ff;margin:0;padding:28px;color:#222}
+  .wrap{max-width:980px;margin:0 auto}
+  header{display:flex;justify-content:flex-end;align-items:center;gap:12px}
+  h1{margin:6px 0 18px;color:var(--accent);font-size:26px}
+  .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.05);margin-bottom:14px}
+  label{display:block;margin-top:8px;font-weight:700}
+  select,input,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #d0e7fb;box-sizing:border-box;margin-top:8px;font-size:15px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  button{cursor:pointer;border:none;color:#fff;background:var(--accent);padding:10px 12px;border-radius:8px}
+  button.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+  button.warn{background:var(--accent2)}
+  .big{padding:14px 16px;font-size:17px;background:#0a57a0}
+  .box{margin-top:12px;padding:12px;border-radius:8px;background:#f0faff;direction:ltr}
+  .hidden{display:none}
+  .muted{color:#666;font-size:13px;margin-top:8px}
+  .danger{color:#b00020}
+  svg text{font-size:13px;text-anchor:middle;pointer-events:none}
+  /* axis styles */
+  .axis{position:relative;height:80px;border-top:2px solid #333;padding-top:6px;background:#fff;border-radius:8px}
+  .axis .point{position:absolute;top:0;text-align:center}
+  .axis .range{position:absolute;left:5%;right:5%;top:36px;text-align:center}
+  /* hatched fill */
+  .hatched{background-image:repeating-linear-gradient(45deg, rgba(0,0,0,0.06) 0 4px, transparent 4px 8px);height:12px;margin-top:6px}
+</style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card">
+      <h1>تعریف مجموعهٔ A :</h1>
 
-  <h2>🔹 تعریف مجموعه A:</h2>
-  <label>عضو کدام مجموعه شناخته‌شده است؟</label>
-  <select id="knownSet">
-    <option value="">انتخاب کنید...</option>
-    <option value="N">N (اعداد طبیعی)</option>
-    <option value="W">W (اعداد شمارشی)</option>
-    <option value="Z">Z (اعداد صحیح)</option>
-    <option value="Q">Q (اعداد گویا)</option>
-    <option value="I">اعداد گنگ</option>
-    <option value="R">R (اعداد حقیقی)</option>
-  </select>
+      <label>عضو کدام مجموعهٔ شناخته‌شده است؟</label>
+      <select id="baseA">
+        <option value="">-- انتخاب کنید --</option>
+        <option value="N">N — اعداد طبیعی</option>
+        <option value="W">W — اعداد حسابی (شامل ۰)</option>
+        <option value="Z">Z — اعداد صحیح</option>
+        <option value="Q">Q — اعداد گویا</option>
+        <option value="R">R — اعداد حقیقی</option>
+        <option value="irr">اعداد گنگ</option>
+      </select>
 
-  <div id="autoExpression" class="result-box"></div>
+      <label>اگر شرط وجود دارد آن را به زبان ساده فارسی بنویس (مثلاً: کوچکتر از 5 یا بین 1 و 4 یا زوج)</label>
+      <input id="condA" placeholder="مثلاً: کوچکتر از 5">
 
-  <label>اگر شرطی دارد، آن را به زبان ساده بنویس:</label><br>
-  <input id="textCondition" type="text" placeholder="مثلاً x کوچکتر از 5 است">
+      <div class="row">
+        <button id="btnBuild">ساخت (پیش‌نمایش)</button>
+        <button id="btnShowMath" class="ghost">نمایش نماد ریاضی</button>
+        <button id="btnShowMembers" class="ghost">نمایش اعضا</button>
+        <button id="btnVenn" class="ghost">نمایش نمودار ون (انیمیشنی)</button>
+        <button id="btnAxis" class="ghost">نمایش روی محور</button>
+        <button id="btnOps" class="big">انجام عملیات ریاضی →</button>
+      </div>
 
-  <button onclick="makeExpression()">نمایش نماد ریاضی</button>
+      <div id="formulaBox" class="box">A هنوز ساخته نشده است.</div>
+      <div id="mathBox" class="box hidden"></div>
+      <div id="membersBox" class="box hidden"></div>
+      <div id="vennBox" class="box hidden center"></div>
+      <div id="axisBox" class="box hidden"></div>
 
-  <div id="mathResult" class="result-box"></div>
+      <div class="muted">توجه: اگر مجموعه از نوع ℚ یا ℝ یا اعداد گنگ باشد، نمایش اعضا/ون/محور به صورت عددی امکان‌پذیر نیست و پیام مناسب نمایش داده می‌شود.</div>
+    </div>
+  </div>
 
-  <button onclick="showMembers()">نمایش اعضا</button>
-  <div id="membersBox" class="result-box"></div>
+<script>
+/* ==== توابع کمکی ==== */
+function persianNum(s){ return String(s).replace(/[0-9]/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]); }
+function isInteger(n){ return Number.isInteger(n); }
 
-  <button onclick="showVenn()">نمایش با نمودار ون</button>
-  <div id="vennBox" class="result-box"></div>
+/* نمونه اعضا برای نمایش (محدود) */
+const samples = {
+  N: (n=20)=>Array.from({length:n},(_,i)=>i+1),
+  W: (n=20)=>Array.from({length:n},(_,i)=>i),
+  Z: (n=41)=>{ const out=[]; for(let i=-20;i<=20;i++) out.push(i); return out; }
+};
 
-  <button onclick="showAxis()">نمایش مجموعه روی محور</button>
-  <div id="axisBox" class="result-box"></div>
+/* پارس شرط فارسی به ساختار ساده */
+function parseCondition(text){
+  const s=(text||'').trim().toLowerCase();
+  if(!s) return {ok:false};
+  let m;
+  if(m=s.match(/بین\s*(-?\d+)\s*(?:و|تا)\s*(-?\d+)/)) {
+    const a=Number(m[1]), b=Number(m[2]);
+    return {ok:true,type:'interval',a:Math.min(a,b),b:Math.max(a,b),inclusiveLeft:true,inclusiveRight:true,
+      predicate:x=>x>=Math.min(a,b) && x<=Math.max(a,b),
+      symbolic:`${Math.min(a,b)} \\le x \\le ${Math.max(a,b)}`
+    };
+  }
+  if(m=s.match(/کوچکتر\s*یا\s*مساوی\s*(-?\d+)/)){ const n=Number(m[1]); return {ok:true,type:'lte',n,inclusive:true,predicate:x=>x<=n,symbolic:`x \\le ${n}`}; }
+  if(m=s.match(/بزرگتر\s*یا\s*مساوی\s*(-?\d+)/)){ const n=Number(m[1]); return {ok:true,type:'gte',n,inclusive:true,predicate:x=>x>=n,symbolic:`x \\ge ${n}`}; }
+  if(m=s.match(/کوچکتر\s*(-?\d+)/)){ const n=Number(m[1]); return {ok:true,type:'lt',n,inclusive:false,predicate:x=>x< n,symbolic:`x < ${n}`}; }
+  if(m=s.match(/بزرگتر\s*(-?\d+)/)){ const n=Number(m[1]); return {ok:true,type:'gt',n,inclusive:false,predicate:x=>x> n,symbolic:`x > ${n}`}; }
+  if(/\bزوج\b/.test(s)) return {ok:true,type:'parity',parity:'even',predicate:x=>isInteger(x)&&x%2===0,symbolic:`x \\text{ زوج}`};
+  if(/\bفرد\b/.test(s)) return {ok:true,type:'parity',parity:'odd',predicate:x=>isInteger(x)&&Math.abs(x%2)===1,symbolic:`x \\text{ فرد}`};
+  if(m=s.match(/تقسیم\s*بر\s*(\d+)/)){ const k=Number(m[1]); return {ok:true,type:'div',k,predicate:x=>isInteger(x)&&x%k===0,symbolic:`x \\equiv 0\\ (mod\\ ${k})`}; }
+  if(m=s.match(/^(-?\d+)$/)){ const n=Number(m[1]); return {ok:true,type:'equal',n,predicate:x=>x===n,symbolic:`x = ${n}`}; }
+  return {ok:false};
+}
 
-  <button class="big-btn" onclick="window.location.href='operations.html'">➕ انجام عملیات ریاضی</button>
+/* وضعیت A */
+let A = { base:null, condText:'', parsed:null, members:null, symbolic:'' };
 
-  <script>
-    function makeExpression() {
-      let set = document.getElementById("knownSet").value;
-      let cond = document.getElementById("textCondition").value;
-      if (!set) {
-        alert("لطفاً یک مجموعه انتخاب کن");
-        return;
-      }
-      let expression = `{ x ∈ ${set} | ${cond ? cond : '...' } }`;
-      document.getElementById("mathResult").innerText = "نمایش ریاضی: " + expression;
-    }
+/* المان‌ها */
+const baseEl = document.getElementById('baseA');
+const condEl = document.getElementById('condA');
+const btnBuild = document.getElementById('btnBuild');
+const btnShowMath = document.getElementById('btnShowMath');
+const btnShowMembers = document.getElementById('btnShowMembers');
+const btnVenn = document.getElementById('btnVenn');
+const btnAxis = document.getElementById('btnAxis');
+const btnOps = document.getElementById('btnOps');
 
-    function showMembers() {
-      let set = document.getElementById("knownSet").value;
-      let box = document.getElementById("membersBox");
-      if (set === "R" || set === "I" || set === "Q") {
-        box.innerText = "به دلیل اینکه عضو اعداد حقیقی، گنگ یا گویاست، نمایش اعضا ممکن نیست.";
-      } else if (set === "N") {
-        box.innerText = "{1, 2, 3, 4, ...}";
-      } else if (set === "W") {
-        box.innerText = "{0, 1, 2, 3, ...}";
-      } else if (set === "Z") {
-        box.innerText = "{..., -2, -1, 0, 1, 2, ...}";
-      } else {
-        box.innerText = "لطفاً ابتدا یک مجموعه انتخاب کن.";
-      }
-    }
+const formulaBox = document.getElementById('formulaBox');
+const mathBox = document.getElementById('mathBox');
+const membersBox = document.getElementById('membersBox');
+const vennBox = document.getElementById('vennBox');
+const axisBox = document.getElementById('axisBox');
 
-    function showVenn() {
-      let set = document.getElementById("knownSet").value;
-      let box = document.getElementById("vennBox");
-      if (set === "R" || set === "I" || set === "Q") {
-        box.innerText = "امکان نمایش وجود ندارد، زیرا مجموعه نا‌متناهی یا حقیقی است.";
-      } else {
-        box.innerText = "🔵 (دایره ون با اعضای مجموعه نمایش داده می‌شود)";
-      }
-    }
+/* ساخت مجموعه A (پیش‌نمایش و نمونه‌سازی اعضای محدود) */
+btnBuild.addEventListener('click', ()=>{
+  const base = baseEl.value;
+  const cond = condEl.value.trim();
+  if(!base){ alert('لطفاً یک مجموعهٔ شناخته‌شده انتخاب کن'); return; }
+  A.base = base; A.condText = cond;
+  A.parsed = cond ? parseCondition(cond) : {ok:false};
+  // نماد ریاضی (نمایش چپ به راست در متن)
+  if(base==='irr') A.symbolic = cond ? `A = { x ∈ اعداد گنگ | ${A.parsed.symbolic||cond} }` : `A = { x ∈ اعداد گنگ }`;
+  else A.symbolic = cond ? `A = { x ∈ ${base} | ${A.parsed.symbolic||cond} }` : `A = { x ∈ ${base} }`;
+  // members: فقط برای N,W,Z تولید نمونهٔ محدود انجام می‌دهیم
+  if(['N','W','Z'].includes(base)){
+    const sample = samples;
+    if(A.parsed.ok) A.members = sample.filter(A.parsed.predicate);
+    else A.members = sample;
+  } else {
+    A.members = null;
+  }
+  formulaBox.innerHTML = `<strong>مجموعهٔ A (پیش‌نمایش):</strong> <div style="margin-top:6px;direction:ltr">${A.symbolic}</div>`;
+  mathBox.classList.add('hidden'); membersBox.classList.add('hidden'); vennBox.classList.add('hidden'); axisBox.classList.add('hidden');
+});
 
-    function showAxis() {
-      let set = document.getElementById("knownSet").value;
-      let box = document.getElementById("axisBox");
-      if (set === "R") {
-        box.innerText = "محور نمایش داده شد: خطوط پیوسته با دایره‌های توپر و توخالی";
-      } else if (set === "N" || set === "W" || set === "Z") {
-        box.innerText = "روی محور: نقطه برای هر عدد، و باز یا بسته بودن انتها نشان داده می‌شود.";
-      } else {
-        box.innerText = "به دلیل حقیقی یا گنگ بودن نمایش روی محور ممکن نیست.";
-      }
-    }
-  </script>
+/* نمایش نماد ریاضی جدا */
+btnShowMath.addEventListener('click', ()=>{
+  if(!A.symbolic){ alert('ابتدا A را بساز'); return; }
+  mathBox.classList.remove('hidden');
+  mathBox.innerHTML = `<pre style="direction:ltr;margin:0;padding:6px">${A.symbolic}</pre>`;
+});
+
+/* نمایش اعضا */
+btnShowMembers.addEventListener('click', ()=>{
+  membersBox.classList.remove('hidden');
+  if(!A.members){ membersBox.innerHTML = `<div class="danger">به دلیل اینکه عضو اعداد ${A.base==='Q'?'گویا':(A.base==='R'?'حقیقی':'گنگ')} است، نمایش اعضا امکان‌پذیر نیست.</div>`; return; }
+  membersBox.innerHTML = `<div><strong>A = </strong>{ ${A.members.map(x=>persianNum(x)).join(', ')} }</div>`;
+});
+
+/* نمایش ون — با انیمیشن: ابتدا خط سپس دایره می‌آید و اعضا نمایش داده می‌شوند */
+btnVenn.addEventListener('click', ()=>{
+  vennBox.classList.remove('hidden');
+  vennBox.innerHTML = '';
+  if(!A.members || A.members.length===0){ vennBox.innerHTML = `<div class="danger">امکان نمایش نمودار ون وجود ندارد (مجموعه نامتناهی یا غیرقابل‌شمارش).</div>`; return; }
+  const members = A.members.slice(0,30);
+  const svgW = 340, svgH = 200, cx = svgW/2, cy = svgH/2, r = 70;
+  // initial: horizontal line
+  vennBox.innerHTML = `<svg id="vennSVG" width="${svgW}" height="${svgH}">
+      <line id="vennLine" x1="${cx-r}" y1="${cy}" x2="${cx+r}" y2="${cy}" stroke="#0b63b6" stroke-width="3" stroke-linecap="round"/>
+      <circle id="vennCircle" cx="${cx}" cy="${cy}" r="${r}" stroke="#0b63b6" stroke-width="3" fill="rgba(11,99,182,0.08)" stroke-dasharray="440" stroke-dashoffset="440"/>
+    </svg>`;
+  // animate: line fades out while circle is drawn
+  const line = document.getElementById('vennLine');
+  const circle = document.getElementById('vennCircle');
+  setTimeout(()=>{ line.style.transition='all 700ms ease'; line.style.opacity=0; circle.style.transition='stroke-dashoffset 900ms ease'; circle.style.strokeDashoffset=0; }, 200);
+  // after animation, place numbers around circle
+  setTimeout(()=>{
+    const svg = document.getElementById('vennSVG');
+    const step = 360 / members.length;
+    members.forEach((v,i)=>{
+      const ang = (step*i - 90) * Math.PI/180;
+      const x = cx + (r-18)*Math.cos(ang);
+      const y = cy + (r-18)*Math.sin(ang);
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', x);
+      t.setAttribute('y', y+4);
+      t.textContent = persianNum(v);
+      t.setAttribute('text-anchor','middle');
+      svg.appendChild(t);
+    });
+  }, 1200);
+});
+
+/* نمایش محور */
+btnAxis.addEventListener('click', ()=>{
+  axisBox.classList.remove('hidden');
+  axisBox.innerHTML = '';
+  if(!A.members || A.members.length===0){ axisBox.innerHTML = `<div class="danger">نمایش محور برای این مجموعه (${A.base==='Q'?'گویا':(A.base==='R'?'حقیقی':'گنگ')}) امکان‌پذیر نیست.</div>`; return; }
+
+  if(['N','W','Z'].includes(A.base)){
+    // نقاط برای هر عدد و کادر بین اولین و آخرین
+    const first = A.members[0], last = A.members[A.members.length-1];
+    const meta = A.parsed || {};
+    let leftOpen=false, rightOpen=false;
+    if(meta.type==='lt' && meta.n===last) rightOpen=true;
+    if(meta.type==='gt' && meta.n===first) leftOpen=true;
+    const span = last - first || 1;
+    // build axis
+    let html = `<div class="axis" style="position:relative;background:#fff;border-radius:8px">`;
+    A.members.forEach(v=>{
+      const pos = ((v-first)/span)*90 + 5; // percent
+      html += `<div class="point" style="left:${pos}%;top:0">${'<div style="font-size:14px">●</div><div style="font-size:12px;margin-top:4px">'+persianNum(v)+'</div>'}</div>`;
+    });
+    const leftArrow = leftOpen ? '◂' : '';
+    const rightArrow = rightOpen ? '▸' : '';
+    html += `<div class="range">${leftArrow} <span style="display:inline-block;border:1px solid #aaa;padding:6px;border-radius:6px;background:#fff">از ${persianNum(first)} تا ${persianNum(last)}</span> ${rightArrow}</div>`;
+    html += `</div>`;
+    axisBox.innerHTML = html;
+    return;
+  }
+
+  // R: خط با دو فلش در دو سر؛ برای بازه‌ها مرز پر یا خالی؛ هاشور بین خط و محور (با فاصله 1 میلی متر برای نقطهٔ پر)
+  const meta = A.parsed || {};
+  // اگر شرط عددی مساوی (equal)
+  if(meta.type==='equal'){
+    const n = meta.n;
+    axisBox.innerHTML = `<div style="position:relative;height:80px;border-top:2px solid #333;padding-top:6px;background:#fff;border-radius:8px">
+      <div style="position:absolute;left:50%;transform:translateX(-50%);top:-8px;font-size:18px">●</div>
+      <div style="position:absolute;left:50%;transform:translateX(-50%);top:22px;font-size:12px">${persianNum(n)}</div>
+      <div style="position:absolute;left:6%;right:6%;top:34px;border-top:2px solid #333"></div>
+    </div>`;
+    return;
+  }
+  if(meta.type==='interval'){
+    const a = meta.a, b = meta.b;
+    // inclusive left/right - but parseCondition earlier set inclusiveBoth for 'بین' only; for simplicity:
+    const leftFilled = !!meta.inclusiveLeft || true; // we set inclusive true for 'بین' earlier
+    const rightFilled = !!meta.inclusiveRight || true;
+    const leftChar = leftFilled ? '●' : '○';
+    const rightChar = rightFilled ? '●' : '○';
+    axisBox.innerHTML = `<div style="position:relative;height:110px;border-top:2px solid #333;padding-top:6px;background:#fff;border-radius:8px">
+      <div style="position:absolute;left:20%;top:-10px;font-size:16px">${leftChar}<div style="font-size:12px;margin-top:4px">${persianNum(a)}</div></div>
+      <div style="position:absolute;left:80%;top:-10px;font-size:16px">${rightChar}<div style="font-size:12px;margin-top:4px">${persianNum(b)}</div></div>
+      <div style="position:absolute;left:20%;right:20%;top:18px;border-top:2px solid #333"></div>
+      <div style="position:absolute;left:20%;right:20%;top:28px;height:14px;">
+         <div class="hatched" style="height:100%;width:100%;border-radius:2px"></div>
+      </div>
+    </div>`;
+    return;
+  }
+
+  // fallback: draw infinite line with arrows
+  axisBox.innerHTML = `<div style="position:relative;height:70px;border-top:2px solid #333;padding-top:6px;background:#fff;border-radius:8px">
+    <div style="position:absolute;left:0;top:-6px;font-size:20px">◀</div>
+    <div style="position:absolute;right:0;top:-6px;font-size:20px">▶</div>
+    <div style="position:absolute;left:8%;top:0">○<div style="font-size:12px">...</div></div>
+    <div style="position:absolute;left:50%;top:0;transform:translateX(-50%)">○<div style="font-size:12px">...</div></div>
+    <div style="position:absolute;left:92%;top:0">○<div style="font-size:12px">...</div></div>
+  </div>`;
+});
+
+/* انتقال به صفحه عملیات: A را در localStorage ذخیره می‌کنیم */
+btnOps.addEventListener('click', ()=>{
+  if(!A.base){ alert('ابتدا مجموعه A را بساز'); return; }
+  localStorage.setItem('A_data', JSON.stringify(A));
+  window.location.href = 'operations.html';
+});
+</script>
 </body>
 </html>

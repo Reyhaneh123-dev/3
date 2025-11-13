@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عملیات روی مجموعه‌ها</title>
+  <style>
+    body {
+      font-family: 'Tahoma', sans-serif;
+      background: #f3e5f5;
+      color: #222;
+      padding: 40px;
+      direction: rtl;
+    }
+    h2 { color: #6a1b9a; }
+    select, input, button {
+      margin: 10px 0;
+      padding: 8px 12px;
+      font-size: 16px;
+    }
+    button {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #8e24aa;
+      color: white;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #6a1b9a;
+    }
+    .result-box {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>➕ انجام عملیات بین مجموعه‌ها</h2>
+  <p>مجموعه A بر اساس تعریف صفحه قبل در نظر گرفته می‌شود.</p>
+
+  <label>روش ساخت مجموعه B:</label>
+  <select id="methodB">
+    <option value="">انتخاب کنید...</option>
+    <option value="symbol">با نماد ریاضی</option>
+    <option value="members">نوشتن اعضا</option>
+    <option value="known">از مجموعه‌های شناخته‌شده</option>
+  </select>
+
+  <div id="Bcontent" class="result-box"></div>
+
+  <label>نوع عمل ریاضی:</label>
+  <select id="operation">
+    <option value="">انتخاب کنید...</option>
+    <option value="union">اجتماع (A ∪ B)</option>
+    <option value="intersection">اشتراک (A ∩ B)</option>
+    <option value="difference">تفاضل (A − B)</option>
+    <option value="subset">زیرمجموعه ⊂</option>
+  </select>
+
+  <button onclick="doOperation()">نمایش نتیجه</button>
+  <div id="resultBox" class="result-box"></div>
+
+  <script>
+    document.getElementById("methodB").addEventListener("change", () => {
+      let method = document.getElementById("methodB").value;
+      let box = document.getElementById("Bcontent");
+      if (method === "symbol") {
+        box.innerHTML = `
+          <label>عضو کدام مجموعه شناخته‌شده است؟</label>
+          <select id="knownB">
+            <option value="N">N</option>
+            <option value="W">W</option>
+            <option value="Z">Z</option>
+            <option value="Q">Q</option>
+            <option value="I">اعداد گنگ</option>
+            <option value="R">R</option>
+          </select>
+          <br><input id="conditionB" type="text" placeholder="شرط را بنویس">
+        `;
+      } else if (method === "members") {
+        box.innerHTML = "{ <input id='membersB' type='text' placeholder='مثلاً 1,2,3'> }";
+      } else if (method === "known") {
+        box.innerHTML = `
+          <label>انتخاب از مجموعه‌های شناخته‌شده:</label>
+          <select id="knownSelectB">
+            <option value="N">N</option>
+            <option value="W">W</option>
+            <option value="Z">Z</option>
+            <option value="Q">Q</option>
+            <option value="I">اعداد گنگ</option>
+            <option value="R">R</option>
+          </select>`;
+      } else box.innerHTML = "";
+    });
+
+    function doOperation() {
+      let op = document.getElementById("operation").value;
+      let res = document.getElementById("resultBox");
+      if (!op) {
+        res.innerText = "لطفاً نوع عمل را انتخاب کن.";
+        return;
+      }
+      res.innerText = "مجموعه C حاصل از " + op + " بین A و B است.";
+    }
+  </script>
+
+</body>
+</html>
